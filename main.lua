@@ -108,8 +108,9 @@ end
 function StopWatchTimerDisplay:getTimeText()
     if self.mode == "stopwatch" then
         local elapsed = self.paused and self.pause_offset or (self.pause_offset + (os.time() - self.now))
-        local _, m, s = Datetime.secondsToClock(elapsed, false, false):match("(%d+):(%d+):(%d+)")
-        return T("%1:%2", m, string.format("%02d", s))
+        local m = math.floor(elapsed / 60)
+        local s = elapsed % 60
+        return T("%1:%2", string.format("%02d", m), string.format("%02d", s))
     else
         if not self.timer_end_time then
             self.timer_end_time = os.time() + self.timer_minutes * 60
@@ -121,8 +122,9 @@ function StopWatchTimerDisplay:getTimeText()
             self:alarm()
             return "00:00"
         end
-        local _, m, s = Datetime.secondsToClock(remaining, false, false):match("(%d+):(%d+):(%d+)")
-        return T("%1:%2", m, string.format("%02d", s))
+        local m = math.floor(remaining / 60)
+        local s = remaining % 60
+        return T("%1:%2", string.format("%02d", m), string.format("%02d", s))
     end
 end
 
@@ -328,7 +330,7 @@ function StopWatchTimerDisplay:toggleMode()
 end
 
 function StopWatchTimerDisplay:setTimerMinutes()
-    local options = {5, 10, 15, 20, 25, 30}
+    local options = {5, 10, 15, 20, 25, 30, 45, 60, 90, 120}
     local current_idx = 1
     for i, v in ipairs(options) do
         if v == self.timer_minutes then
